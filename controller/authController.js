@@ -1,5 +1,6 @@
 import axios from "axios";
-
+import dotenv from 'dotenv';
+dotenv.config(); 
 
 
 const getUserDate = async (authTokenUrl,data, accessTokenUrl) => {
@@ -75,9 +76,5 @@ export async function socialLogin(req, res) {
     }
 }
 
-export async function signUp(req,res) {
-    console.log(req.body);
-    
-}
 
 
