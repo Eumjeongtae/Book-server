@@ -3,6 +3,8 @@ import cors from "cors";
 // import imgUploadRouter from "./router/imgUploadRouter.js";
 import authRouter from "./router/authRouter.js";
 import signupRouter from "./router/signupRouter.js";
+import productRouter from "./router/productRouter.js";
+import path from 'path';
 
 
 const PORT = process.env.PORT || 8000; 
@@ -15,8 +17,8 @@ server.use(cors());
 // server.use("/imgupload", imgUploadRouter)
 server.use("/auth", authRouter);
 server.use("/signup", signupRouter);
-// server.use("/imgupload",express.static("imgUpload"));
-
+server.use("/product", productRouter);
+server.use("/imgupload",express.static("imgUpload"));
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
