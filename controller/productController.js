@@ -49,7 +49,7 @@ export async function getList(req, res) {
             "PurchaseDate": "2018-06-11",
             "BookInfo": "This is a description for book 3.",
             "PurchasePath": "Online Store",
-            "Category": "General",
+            "Category": "Development",
             "Status": "Rented"
         },
         {
@@ -62,7 +62,7 @@ export async function getList(req, res) {
             "PurchaseDate": "2018-06-11",
             "BookInfo": "This is a description for book 4.",
             "PurchasePath": "Online Store",
-            "Category": "General",
+            "Category": "GenDevelopmenteral",
             "Status": "Stock"
         },
         {
@@ -99,7 +99,7 @@ export async function getList(req, res) {
             "PurchaseDate": "2018-06-11",
             "BookInfo": "This is a description for book 7.",
             "PurchasePath": "Online Store",
-            "Category": "General",
+            "Category": "Marketing",
             "Status": "Stock"
         },
         {
@@ -111,7 +111,7 @@ export async function getList(req, res) {
             "PurchaseDate": "2018-06-11",
             "BookInfo": "This is a description for book 8.",
             "PurchasePath": "Online Store",
-            "Category": "General",
+            "Category": "Marketing",
             "Status": "Rented"
         }
     ]
