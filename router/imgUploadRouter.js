@@ -1,8 +1,8 @@
-// import express from 'express';
-// import * as imgUploadController from "../controller/imgUploadController.js";
+import express from 'express';
+import * as imgUploadController from "../controller/imgUploadController.js";
 
-// const router = express.Router();
+const router = express.Router();
 
-// router.post('/', imgUploadController.imgUpload);
+router.post('/', imgUploadController.imgUpload);
 
-// export default router;
+export default router;
