@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer"
 import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
 dotenv.config(); 
 
 const transporter = nodemailer.createTransport({
@@ -11,6 +12,7 @@ const transporter = nodemailer.createTransport({
 		pass: process.env.NAVER_PASS,  // 네이버 비밀번호
 	},
 });
+
 function generateRandomNumbers(min, max, count) {
     let numbers = [];
 
@@ -24,6 +26,10 @@ function generateRandomNumbers(min, max, count) {
     return numbers.join('');
 }
 
+export async function idCheck(req,res){
+    //추후 아이디 중복 확인
+    res.json(true)
+}
 
 
 export async function emailCheck(req, res) {
@@ -47,4 +53,11 @@ export async function emailCheck(req, res) {
     } finally {
         transporter.close(); // 전송 종료
     }
+}
+
+export async function signUp(req,res) {
+    let {uid,pw,email,mailAddr } = req.body.data;
+    const mail = email+mailAddr
+    const hashPass = bcrypt.hashSync(pw, 10);
+    console.log(hashPass);
 }
