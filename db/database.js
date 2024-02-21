@@ -1,11 +1,11 @@
-// import mysql from "mysql2";
+import mysql from "mysql2";
 
-// const pool = mysql.createPool({
-//   host: "127.0.0.1",
-//   port: "3306",
-//   user: "root",
-//   password: "1234",
-//   database: "meethere",
-// });
+const pool = mysql.createPool({
+  host: "192.168.10.56",
+  port: "3306",
+  user: "admin",
+  password: "qwe123!!",
+  database: "bookbooking",
+});
 
-// export const db= pool.promise()
+export const db= pool.promise()

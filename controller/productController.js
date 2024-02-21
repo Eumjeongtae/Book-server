@@ -1,118 +1,123 @@
+
+import * as productRepository from '../repository/productRepository.js'
+
 const list = [
     {
         "image": "imgupload/img1.jpg",
-        "title": "title1",
-        "Author": "Author Name 1",
-        "Publisher": "Publisher Name 1",
-        "PublishDate": "2020-01-01",
-        "PurchaseDate": "2020-02-01",
-        "BookInfo": "This is a description for book 1.",
+        "book_name": "book_name1",
+        "author": "author Name 1",
+        "publisher": "publisher Name 1",
+        "publicationdate": "2020-01-01",
+        "income_date": "2020-02-01",
+        "memo": "This is a description for book 1.",
         "PurchasePath": "Online Store",
-        "Category": "Development",
-        "Status": "Stock"
+        "genre": "Development",
+        "status": "Stock"
     },
     {
-        "title": "title2",
+        "book_name": "book_name2",
         "image": "imgupload/img2.jpg",
-        "Author": "Author Name 2",
-        "Publisher": "Publisher Name 2",
-        "PublishDate": "2019-03-15",
-        "PurchaseDate": "2019-04-20",
-        "BookInfo": "This is a description for book 2.",
+        "author": "author Name 2",
+        "publisher": "publisher Name 2",
+        "publicationdate": "2019-03-15",
+        "income_date": "2019-04-20",
+        "memo": "This is a description for book 2.",
         "PurchasePath": "Local Bookstore",
-        "Category": "Marketing",
-        "Status": "Rented"
+        "genre": "Marketing",
+        "status": "Rented"
     },
     {
         "image": "imgupload/img3.jpg",
-        "title": "title3",
-        "Author": "Author Name 3",
-        "Publisher": "Publisher Name 3",
-        "PublishDate": "2018-05-10",
-        "PurchaseDate": "2018-06-11",
-        "BookInfo": "This is a description for book 3.",
+        "book_name": "book_name3",
+        "author": "author Name 3",
+        "publisher": "publisher Name 3",
+        "publicationdate": "2018-05-10",
+        "income_date": "2018-06-11",
+        "memo": "This is a description for book 3.",
         "PurchasePath": "Online Store",
-        "Category": "General",
-        "Status": "Stock"
+        "genre": "General",
+        "status": "Stock"
     },
     {
-        "title": "title4",
+        "book_name": "book_name4",
 
         "image": "imgupload/img4.jpg",
-        "Author": "Author Name 3",
-        "Publisher": "Publisher Name 3",
-        "PublishDate": "2018-05-10",
-        "PurchaseDate": "2018-06-11",
-        "BookInfo": "This is a description for book 3.",
+        "author": "author Name 3",
+        "publisher": "publisher Name 3",
+        "publicationdate": "2018-05-10",
+        "income_date": "2018-06-11",
+        "memo": "This is a description for book 3.",
         "PurchasePath": "Online Store",
-        "Category": "Development",
-        "Status": "Rented"
+        "genre": "Development",
+        "status": "Rented"
     },
     {
-        "title": "title5",
+        "book_name": "book_name5",
 
         "image": "imgupload/img5.jpg",
-        "Author": "Author Name 4",
-        "Publisher": "Publisher Name 4",
-        "PublishDate": "2018-05-10",
-        "PurchaseDate": "2018-06-11",
-        "BookInfo": "This is a description for book 4.",
+        "author": "author Name 4",
+        "publisher": "publisher Name 4",
+        "publicationdate": "2018-05-10",
+        "income_date": "2018-06-11",
+        "memo": "This is a description for book 4.",
         "PurchasePath": "Online Store",
-        "Category": "Development",
-        "Status": "Stock"
+        "genre": "Development",
+        "status": "Stock"
     },
     {
-        "title": "title6",
+        "book_name": "book_name6",
 
         "image": "imgupload/img6.jpg",
-        "Author": "Author Name 5",
-        "Publisher": "Publisher Name 5",
-        "PublishDate": "2018-05-10",
-        "PurchaseDate": "2018-06-11",
-        "BookInfo": "This is a description for book 5.",
+        "author": "author Name 5",
+        "publisher": "publisher Name 5",
+        "publicationdate": "2018-05-10",
+        "income_date": "2018-06-11",
+        "memo": "This is a description for book 5.",
         "PurchasePath": "Online Store",
-        "Category": "General",
-        "Status": "Stock"
+        "genre": "General",
+        "status": "Stock"
     },
     {
-        "title": "title7",
+        "book_name": "book_name7",
         "image": "imgupload/img7.jpg",
-        "Author": "Author Name 6",
-        "Publisher": "Publisher Name 6",
-        "PublishDate": "2018-05-10",
-        "PurchaseDate": "2018-06-11",
-        "BookInfo": "This is a description for book 6.",
+        "author": "author Name 6",
+        "publisher": "publisher Name 6",
+        "publicationdate": "2018-05-10",
+        "income_date": "2018-06-11",
+        "memo": "This is a description for book 6.",
         "PurchasePath": "Online Store",
-        "Category": "General",
-        "Status": "overdue"
+        "genre": "General",
+        "status": "overdue"
     },
     {
-        "title": "title8",
+        "book_name": "book_name8",
         "image": "imgupload/img8.jpg",
-        "Author": "Author Name 7",
-        "Publisher": "Publisher Name 7",
-        "PublishDate": "2018-05-10",
-        "PurchaseDate": "2018-06-11",
-        "BookInfo": "This is a description for book 7.",
+        "author": "author Name 7",
+        "publisher": "publisher Name 7",
+        "publicationdate": "2018-05-10",
+        "income_date": "2018-06-11",
+        "memo": "This is a description for book 7.",
         "PurchasePath": "Online Store",
-        "Category": "Marketing",
-        "Status": "Stock"
+        "genre": "Marketing",
+        "status": "Stock"
     },
     {
-        "title": "title9",
+        "book_name": "book_name9",
         "image": "imgupload/img9.jpg",
-        "Author": "Author Name 8",
-        "Publisher": "Publisher Name 8",
-        "PublishDate": "2018-05-10",
-        "PurchaseDate": "2018-06-11",
-        "BookInfo": "This is a description for book 8.",
+        "author": "author Name 8",
+        "publisher": "publisher Name 8",
+        "publicationdate": "2018-05-10",
+        "income_date": "2018-06-11",
+        "memo": "This is a description for book 8.",
         "PurchasePath": "Online Store",
-        "Category": "Marketing",
-        "Status": "Rented"
+        "genre": "Marketing",
+        "status": "Rented"
     }
 ]
 
 export async function getList(req, res) {
+    const result  = await productRepository.getList();
+    console.log(result);
     res.json(list)
 }
 

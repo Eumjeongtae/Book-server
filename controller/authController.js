@@ -45,7 +45,7 @@ export async function socialLogin(req, res) {
             data.append('code', code)
             accessTokenUrl = 'https://kapi.kakao.com/v2/user/me'
             userInfo = await getUserDate(authTokenUrl, data, accessTokenUrl);
-            token = jwt.sign({ uid: userInfo.id , email : userInfo.kakao_account.email}, '556pT=W6Pr')
+            token = jwt.sign({ id: userInfo.id , email : userInfo.kakao_account.email}, '556pT=W6Pr')
             result.token = token;
             result.login = true;
 
@@ -58,7 +58,7 @@ export async function socialLogin(req, res) {
             data.append('grant_type', 'authorization_code');
             accessTokenUrl = 'https://openapi.naver.com/v1/nid/me'
             userInfo = await getUserDate(authTokenUrl, data, accessTokenUrl);
-            token = jwt.sign({ uid: userInfo.response.id ,email : userInfo.response.email }, '556pT=W6Pr')
+            token = jwt.sign({ id: userInfo.response.id ,email : userInfo.response.email }, '556pT=W6Pr')
             result.token = token;
             result.login = true;
 
@@ -71,7 +71,7 @@ export async function socialLogin(req, res) {
             data.append('grant_type', 'authorization_code');
             accessTokenUrl = 'https://www.googleapis.com/oauth2/v2/userinfo';
             userInfo = await getUserDate(authTokenUrl, data, accessTokenUrl);
-            token = jwt.sign({ uid: userInfo.id ,email:userInfo.email}, '556pT=W6Pr')
+            token = jwt.sign({ id: userInfo.id ,email:userInfo.email}, '556pT=W6Pr')
             result.token = token;
             result.login = true;
 
@@ -83,10 +83,11 @@ export async function socialLogin(req, res) {
 
     }
     catch (error) {
-        console.error("사용자 정보를 가져오는 중 오류 발생:", error);
-        res.status(500).json({
-            error: "사용자 정보를 가져오는 중 오류 발생",
-        });
+        // console.error("사용자 정보를 가져오는 중 오류 발생:", error);
+        // res.status(500).json({
+        //     error: "사용자 정보를 가져오는 중 오류 발생",
+        // });
+        console.log('연동로그인 에러');
     }
 }
 

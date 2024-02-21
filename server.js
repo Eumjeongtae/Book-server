@@ -3,6 +3,7 @@ import cors from "cors";
 import imgUploadRouter from "./router/imgUploadRouter.js";
 import authRouter from "./router/authRouter.js";
 import signupRouter from "./router/signupRouter.js";
+import loginRouter from "./router/loginRouter.js";
 import productRouter from "./router/productRouter.js";
 import reviewRouter from "./router/reviewRouter.js";
 import newBookRouter from "./router/newBookRouter.js";
@@ -18,6 +19,7 @@ server.use(cors());
 
 server.use("/imgupload", imgUploadRouter)
 server.use("/auth", authRouter);
+server.use("/login", loginRouter);
 server.use("/signup", signupRouter);
 server.use("/product", productRouter);
 server.use("/newBook", newBookRouter);
