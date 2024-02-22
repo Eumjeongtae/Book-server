@@ -1,6 +1,8 @@
 import axios from "axios";
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
+import * as signRepository from '../repository/signRepository.js'
+import * as loginRepository from '../repository/loginRepository.js'
 
 dotenv.config();
 
@@ -36,7 +38,7 @@ export async function socialLogin(req, res) {
         let data = new URLSearchParams();
         let token = null;
         let result = {};
-        result.login=false;
+        result.login = false;
         if (site === 'kakao') {
             authTokenUrl = `https://kauth.kakao.com/oauth/token`
             data.append('client_id', process.env.KAKAO_REST_API_KEY)
@@ -45,7 +47,12 @@ export async function socialLogin(req, res) {
             data.append('code', code)
             accessTokenUrl = 'https://kapi.kakao.com/v2/user/me'
             userInfo = await getUserDate(authTokenUrl, data, accessTokenUrl);
-            token = jwt.sign({ id: userInfo.id , email : userInfo.kakao_account.email}, '556pT=W6Pr')
+
+            const result2 = await loginRepository.login(userInfo.id)
+            if (result2.cnt === 0) {
+                await signRepository.insertUser(userInfo.id, 0, userInfo.kakao_account.email, userInfo.properties.nickname)
+            }
+            token = jwt.sign({ id: userInfo.id, id_idx: result2.id_idx }, '556pT=W6Pr')
             result.token = token;
             result.login = true;
 
@@ -56,9 +63,15 @@ export async function socialLogin(req, res) {
             data.append('state', 'STATE_STRING')
             data.append('code', code)
             data.append('grant_type', 'authorization_code');
+            
             accessTokenUrl = 'https://openapi.naver.com/v1/nid/me'
             userInfo = await getUserDate(authTokenUrl, data, accessTokenUrl);
-            token = jwt.sign({ id: userInfo.response.id ,email : userInfo.response.email }, '556pT=W6Pr')
+            const result2 = await loginRepository.login(userInfo.response.id)
+
+            if (result2.cnt === 0) {
+                await signRepository.insertUser(userInfo.response.id, 0, userInfo.response.email, userInfo.response.name)
+            }
+            token = jwt.sign({ id: userInfo.response.id, id_idx: result2.id_idx}, '556pT=W6Pr')
             result.token = token;
             result.login = true;
 
@@ -71,7 +84,12 @@ export async function socialLogin(req, res) {
             data.append('grant_type', 'authorization_code');
             accessTokenUrl = 'https://www.googleapis.com/oauth2/v2/userinfo';
             userInfo = await getUserDate(authTokenUrl, data, accessTokenUrl);
-            token = jwt.sign({ id: userInfo.id ,email:userInfo.email}, '556pT=W6Pr')
+            const result2 = await loginRepository.login(userInfo.id)
+
+            if (result2.cnt === 0) {
+                await signRepository.insertUser(userInfo.id, 0, userInfo.email, userInfo.name)
+            }
+            token = jwt.sign({ id: userInfo.id, id_idx: result2.id_idx }, '556pT=W6Pr')
             result.token = token;
             result.login = true;
 

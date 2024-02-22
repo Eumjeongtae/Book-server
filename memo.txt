@@ -1,0 +1,13 @@
+genre  
+1. genre_name : 개발
+2. genre_name : 마케팅
+3. genre_name : 일반
+
+RentalHistory
+
+user_id
+book_id
+rent_date
+expected_return_date
+expected_return_date
+return_status

@@ -27,15 +27,14 @@ function generateRandomNumbers(min, max, count) {
 
     return numbers.join('');
 }
-
+//아이티 중복확인
 export async function idCheck(req, res) {
     const id = req.body.data;
     const result = await signRepository.getUserId(id)
-    console.log(result.cnt);
     result.cnt === 0 ? res.json(true) : res.json(false)
 }
 
-
+//이메일 체크
 export async function emailCheck(req, res) {
     let { data } = req.body
     let email = data
@@ -64,12 +63,11 @@ export async function emailCheck(req, res) {
 
 
 }
-
+//회원가입
 export async function signUp(req, res) {
     let { id, name, password, email, mailAddr } = req.body.data;
      email = email + mailAddr
      password = bcrypt.hashSync(password, 10);
-    console.log(`id : ${id}/name : ${name} / password : ${password} / email : ${email}`);
     const result = await signRepository.insertUser(id, password, email, name)
     if (result === 'good') {
         res.json('가입완료')
