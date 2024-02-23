@@ -1,17 +1,20 @@
 import { db } from '../db/database.js';
 
+//책 리스트
 export async function getList(genre) {
     let sql = ``;
-    if (genre) {
+    if (genre>0) {
         sql = `SELECT  book_name,author,image,id,genre FROM Book where genre = ? `;
+        // sql = `SELECT  * FROM Genre`
+
     } else {
         sql = `SELECT  book_name,author,image,id,genre FROM Book`;
         // sql = `SELECT  * FROM User`
     }
 
-    return db.execute(sql, [genre ? genre : '']).then((result) => result[0]);
+    return db.execute(sql, [genre]).then((result) => result[0]);
 }
-// 책정보 , post받은 책id의 책 좋아요 갯수 , post받은 id의 좋아요 여부
+// 책정보 ,  책 좋아요 갯수 , 로그인중인 id의 좋아요 여부
 export async function getDetail(uid, id) {
     let sql = `
   SELECT 
@@ -41,9 +44,9 @@ GROUP BY b.id;
     return db.execute(sql, [uid, id]).then((result) => result[0]);
 }
 
-//
+// 지금있는 페이지의 책이 대여중이라면 대여중인 유저
 export async function getRentHistory(id) {
-    let sql = `SELECT user_id, return_status
+    let sql = `SELECT user_id
   FROM RentalHistory
   WHERE book_id = ? and return_status = 0;
 `;
@@ -89,7 +92,7 @@ VALUES
 
     return db.execute(sql, [user_id, book_id, rent_date, expected_return_date]).then((result) => 'success');
 }
-//책반납
+//유저아이디와 책아이디를 받고  return_status가 대여중인 책반납
 export async function bookReturn(user_id, book_id) {
     let sql = `
     UPDATE RentalHistory

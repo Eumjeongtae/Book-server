@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 dotenv.config();
 
+//nodemailer 모듈을 사용해 이메일 전송을 위한 SMTP 트랜스포터 생성
 const transporter = nodemailer.createTransport({
     service: 'naver',
     host: 'smtp.naver.com',  // SMTP 서버명

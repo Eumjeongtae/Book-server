@@ -28,6 +28,7 @@ const getUserDate = async (authTokenUrl, data, accessTokenUrl) => {
     return userInfoResponse.data
 }
 
+// 소셜 로그인
 export async function socialLogin(req, res) {
     try {
         const { site } = req.params;

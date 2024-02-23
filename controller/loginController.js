@@ -3,12 +3,11 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 
-
+//일반 로그인
 export async function login(req, res) {
     const { id, password } = req.body.data;
     const result = await loginRepository.login(id);
     result.login = false;
-    console.log(result);
     let token = null;
     if (result.cnt === 1) {
         if (await bcrypt.compare(password, result.password)) {

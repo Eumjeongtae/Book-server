@@ -13,6 +13,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }).array('file');
 // const upload = multer({ storage: storage }).single('file')
 
+//이미지 업로드
 export async function imgUpload(req, res){
 
   let imgUrl = [];

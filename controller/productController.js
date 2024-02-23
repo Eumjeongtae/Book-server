@@ -118,18 +118,11 @@ import * as productRepository from '../repository/productRepository.js';
 export async function getList(req, res) {
     let { genre } = req.params;
     let result = null;
-    if (genre === 'all') {
+    if (genre === 0) {
         result = await productRepository.getList();
-    } else if (genre === 'development') {
-        genre = 1;
+    } else {
         result = await productRepository.getList(genre);
-    } else if (genre === 'marketing') {
-        genre = 2;
-        result = await productRepository.getList(genre);
-    } else if (genre === 'general') {
-        genre = 3;
-        result = await productRepository.getList(genre);
-    }
+    } 
     res.json(result);
 }
 //책상새
@@ -137,38 +130,32 @@ export async function getDetial(req, res) {
     let { id, uid } = req.params;
     const result = await productRepository.getDetail(uid, id);
     const result2 = await productRepository.getRentHistory(id);
-    console.log(result2);
 
     res.json({bookData:result[0],rentData:result2[0]});
 }
+
 //좋아요버튼
 export async function bookLike(req, res) {
     const { user_id, book_id, user_liked } = req.body.data;
-    console.log({ user_id, book_id, user_liked });
     let result = null;
     if (user_liked === 0) {
         result = await productRepository.bookLike(user_id, book_id);
     } else {
         result = await productRepository.bookUnLike(user_id, book_id);
     }
-
     res.json(result);
 }
 
+// 책대여
 export async function bookRent(req, res) {
     const { user_id, book_id, rent_date, expected_return_date } = req.body.data;
-    console.log({ user_id, book_id, rent_date, expected_return_date });
     const result = await productRepository.bookRent(user_id,book_id,rent_date,expected_return_date);
-    console.log(result);
     res.json(result);
-
 }
 
+//책반납
 export async function bookReturn(req,res) {
     const { user_id, book_id} = req.body.data;
     const result = await productRepository.bookReturn(user_id, book_id);
-    console.log(result);
     res.json(result);
-
-
 }
