@@ -1,13 +1,41 @@
-genre  
-1. genre_name : 개발
-2. genre_name : 마케팅
-3. genre_name : 일반
+(genre)
+id:1 genre_name : 개발
+id:2 genre_name : 마케팅
+id:3 genre_name : 일반
 
-RentalHistory
+(RentalHistory)
+id : id
+user_id : 대여자 아이디
+book_id : 책 아이디
+rent_date : 대여일시
+expected_return_date : 반납 예정일
+return_status : 대여 상태 
 
-user_id
-book_id
-rent_date
-expected_return_date
-expected_return_date
-return_status
+(BookReservation)
+id : id
+user_id : 예약자 아이디
+book_id : 책 아이디
+created_at : 예약 신청일
+cancel_at : 예약 취소일
+reservation_status : 예약상태
+
+(Book)
+id : id
+image: 이미지,
+book_name: 택 제목,
+publisher: 출판사,
+author: 작가,
+publication_date: 출판일자,
+income_date: 입고일자,
+memo: 메모,
+income_type: 입고 형태,
+income_method: 입고 경로,
+genre: 장르,
+status: 대여 상태,
+
+(BookReview)
+id : id
+user_id : 사용자 아이디
+book_id : 책 아이디
+title : 리뷰제목
+content : 라뷰 내용
