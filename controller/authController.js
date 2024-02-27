@@ -1,7 +1,7 @@
 import axios from "axios";
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
-import * as signRepository from '../repository/signRepository.js'
+import * as signRepository from '../repository/userRepository.js'
 import * as loginRepository from '../repository/loginRepository.js'
 
 dotenv.config();

@@ -25,6 +25,7 @@ export async function getDetail(uid, id) {
   b.publisher,
   b.publication_date,
   b.memo,
+  b.status,
   COUNT(ubl.user_id) AS like_count,
   CASE
       WHEN EXISTS (
@@ -65,16 +66,15 @@ export async function getRentHistory(id) {
 
 // 지금있는 페이지의 책 리뷰들
 export async function getReview(id) {
-  let sql = `
+    let sql = `
 SELECT br.user_id, br.title, br.score, u.id
 FROM BookReview br
 JOIN User u ON br.user_id = u.id_idx
 WHERE br.book_id = ?;
 `;
 
-  return db.execute(sql, [id]).then((result) => result[0]);
+    return db.execute(sql, [id]).then((result) => result[0]);
 }
-
 
 //책 좋아요
 export async function bookLike(user_id, book_id) {
@@ -103,6 +103,7 @@ WHERE user_id = ? AND book_id = ? ;
 
 //책대여
 export async function bookRent(user_id, book_id, rent_date, expected_return_date) {
+
     // Step 1: 먼저, 예약 중인 로우가 있는지 확인
     let checkSql = `
     SELECT * FROM BookReservation
@@ -128,32 +129,39 @@ export async function bookRent(user_id, book_id, rent_date, expected_return_date
   `;
     await db.execute(insertSql, [user_id, book_id, rent_date, expected_return_date]);
 
+    // 책 상태 업데이트
+    let sqlUpdateBookStatus = `
+  UPDATE Book
+  SET status = 1 
+  WHERE id = ?;
+`;
+
+    await db.execute(sqlUpdateBookStatus, [book_id]);
+
     return 'success';
 }
 
-// //책대여
-// export async function bookRent(user_id, book_id, rent_date, expected_return_date) {
-
-//     let sql = `
-//   INSERT INTO RentalHistory (user_id, book_id, rent_date, expected_return_date)
-// VALUES
-// (?, ?, ?, ?);
-//   `;
-
-//     return db.execute(sql, [user_id, book_id, rent_date, expected_return_date]).then((result) => 'success');
-// }
 
 //유저아이디와 책아이디를 받고  return_status가 대여중인 책반납
 export async function bookReturn(user_id, book_id) {
-  let sql = `
-  UPDATE RentalHistory
-  SET return_status = 1, return_date = NOW()
-  WHERE user_id = ? AND book_id = ? AND return_status = 0;
-`;
+    // 책 반납 처리
+    let returnSql = `
+    UPDATE RentalHistory
+    SET return_status = 1, return_date = NOW()
+    WHERE user_id = ? AND book_id = ? AND return_status = 0;
+  `;
+    await db.execute(returnSql, [user_id, book_id]);
 
-  return db.execute(sql, [user_id, book_id]).then((result) => 'success');
+    // Book 테이블의 status를 0(대여 가능)으로 업데이트
+    let updateBookStatusSql = `
+    UPDATE Book
+    SET status = 0
+    WHERE id = ?;
+  `;
+    await db.execute(updateBookStatusSql, [book_id]);
+
+    return 'success';
 }
-
 
 export async function bookReservation(user_id, book_id, created_at) {
     let sql = `
@@ -189,7 +197,7 @@ export async function bookReservationCancel(cancel_at, user_id, book_id) {
 
 // 마이페이지 책반납 이력
 export async function myPageReturnHistory(user_id) {
-  let sql = `
+    let sql = `
     SELECT 
       rh.book_id, 
       rh.rent_date, 
@@ -205,11 +213,11 @@ export async function myPageReturnHistory(user_id) {
       rh.user_id = ? AND rh.return_status = 1;
   `;
 
-  return db.execute(sql, [user_id]).then((result) => result[0]);
+    return db.execute(sql, [user_id]).then((result) => result[0]);
 }
 // 마이페이지 책대여 이력
 export async function myPageRentHistory(user_id) {
-  let sql = `
+    let sql = `
     SELECT 
       rh.book_id, 
       rh.expected_return_date, 
@@ -224,6 +232,36 @@ export async function myPageRentHistory(user_id) {
       rh.user_id = ? AND rh.return_status = 0;
   `;
 
-  return db.execute(sql, [user_id]).then((result) => result[0]);
+    return db.execute(sql, [user_id]).then((result) => result[0]);
 }
 
+// 마이페이지 예약책
+export async function myPageReserve(user_id) {
+    let sql = `
+
+    SELECT 
+    b.id AS book_id,
+    b.book_name,
+    b.status AS book_status,
+    MAX(rh.expected_return_date) AS expected_return_date
+FROM 
+    BookReservation br
+JOIN 
+    Book b ON br.book_id = b.id
+LEFT JOIN 
+    RentalHistory rh ON b.id = rh.book_id AND rh.return_status = 0
+WHERE 
+    br.user_id = ? AND br.reservation_status = 0
+GROUP BY 
+    b.id, b.book_name, b.status;
+
+
+
+
+
+
+
+  `;
+
+    return db.execute(sql, [user_id]).then((result) => result[0]);
+}

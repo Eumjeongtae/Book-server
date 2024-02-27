@@ -7,6 +7,7 @@ import loginRouter from "./router/loginRouter.js";
 import productRouter from "./router/productRouter.js";
 import reviewRouter from "./router/reviewRouter.js";
 import newBookRouter from "./router/newBookRouter.js";
+import managerRouter from "./router/managerRouter.js";
 import path from 'path';
 
 
@@ -22,8 +23,9 @@ server.use("/auth", authRouter);
 server.use("/login", loginRouter);
 server.use("/signup", signupRouter);
 server.use("/product", productRouter);
-server.use("/newBook", newBookRouter);
 server.use("/review", reviewRouter);
+server.use("/manager", managerRouter);
+server.use("/newBook", newBookRouter);
 server.use("/imgupload",express.static("imgUpload"));
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

@@ -1,4 +1,4 @@
-import * as signRepository from '../repository/signRepository.js'
+import * as userRepository from '../repository/userRepository.js'
 
 import nodemailer from "nodemailer"
 import dotenv from 'dotenv';
@@ -31,7 +31,7 @@ function generateRandomNumbers(min, max, count) {
 //아이티 중복확인
 export async function idCheck(req, res) {
     const id = req.body.data;
-    const result = await signRepository.getUserId(id)
+    const result = await userRepository.getUserId(id)
     result.cnt === 0 ? res.json(true) : res.json(false)
 }
 
@@ -39,7 +39,7 @@ export async function idCheck(req, res) {
 export async function emailCheck(req, res) {
     let { data } = req.body
     let email = data
-    const result = await signRepository.getUserEmail(email)
+    const result = await userRepository.getUserEmail(email)
 
     const randomNumbers = generateRandomNumbers(1, 9, 6);
     const mailOptions = {
@@ -69,7 +69,7 @@ export async function signUp(req, res) {
     let { id, name, password, email, mailAddr } = req.body.data;
      email = email + mailAddr
      password = bcrypt.hashSync(password, 10);
-    const result = await signRepository.insertUser(id, password, email, name)
+    const result = await userRepository.insertUser(id, password, email, name)
     if (result === 'good') {
         res.json('가입완료')
     }

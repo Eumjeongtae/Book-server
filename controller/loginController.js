@@ -12,7 +12,7 @@ export async function login(req, res) {
     if (result.cnt === 1) {
         if (await bcrypt.compare(password, result.password)) {
             result.login = true;
-            token = jwt.sign({ id: id, id_idx: result.id_idx }, '556pT=W6Pr')
+            token = jwt.sign({ id: id, id_idx: result.id_idx , authority: result.authority}, '556pT=W6Pr')
             result.token = token;
         }
     }

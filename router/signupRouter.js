@@ -1,11 +1,11 @@
 import express from 'express';
-import * as signController from "../controller/signController.js";
+import * as userController from "../controller/userController.js";
 
 const router = express.Router();
 
-router.post('/', signController.signUp);
-router.post('/mailCheck', signController.emailCheck);
-router.post('/idCheck', signController.idCheck);
+router.post('/', userController.signUp);
+router.post('/mailCheck', userController.emailCheck);
+router.post('/idCheck', userController.idCheck);
 
 
 export default router;
