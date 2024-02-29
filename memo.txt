@@ -20,18 +20,17 @@ cancel_at : 예약 취소일
 reservation_status : 예약상태
 
 (Book)
-id : id
-image: 이미지,
-book_name: 택 제목,
-publisher: 출판사,
+book_name: 책 제목,
 author: 작가,
+image: 이미지,
+publisher: 출판사,
 publication_date: 출판일자,
-income_date: 입고일자,
-memo: 메모,
 income_type: 입고 형태,
 income_method: 입고 경로,
+income_date: 입고일자,
 genre: 장르,
 status: 대여 상태,
+memo: 메모,
 
 (BookReview)
 id : id

@@ -31,6 +31,7 @@ function generateRandomNumbers(min, max, count) {
 //아이티 중복확인
 export async function idCheck(req, res) {
     const id = req.body.data;
+    console.log(req.body);
     const result = await userRepository.getUserId(id)
     result.cnt === 0 ? res.json(true) : res.json(false)
 }
@@ -38,6 +39,7 @@ export async function idCheck(req, res) {
 //이메일 체크
 export async function emailCheck(req, res) {
     let { data } = req.body
+    console.log(req.body);
     let email = data
     const result = await userRepository.getUserEmail(email)
 

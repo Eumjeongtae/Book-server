@@ -3,7 +3,7 @@ import * as productController from '../controller/productController.js';
 
 const router = express.Router();
 
-router.get('/:genre', productController.getList);
+router.get('/:genre/:startIndex/:endIndex', productController.getList);
 router.get('/detail/:id/:uid', productController.getDetail);
 router.post('/like', productController.bookLike);
 router.post('/rent', productController.bookRent);

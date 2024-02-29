@@ -17,15 +17,7 @@ export async function getList(genre) {
 export async function getDetail(uid, id) {
     let sql = `
   SELECT 
-  b.book_name,
-  b.author,
-  b.image,
-  b.id,
-  b.genre,
-  b.publisher,
-  b.publication_date,
-  b.memo,
-  b.status,
+  b.*,
   COUNT(ubl.user_id) AS like_count,
   CASE
       WHEN EXISTS (

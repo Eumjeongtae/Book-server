@@ -3,6 +3,7 @@ import * as productRepository from '../repository/productRepository.js';
 
 // 메인 책 리스트
 export async function getList(req, res) {
+    console.log(req.params);
     try {
         let { genre } = req.params;
         let result = null;
