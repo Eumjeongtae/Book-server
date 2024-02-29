@@ -3,8 +3,8 @@ import * as productController from '../controller/productController.js';
 
 const router = express.Router();
 
-router.get('/:genre/:startIndex/:endIndex', productController.getList);
 router.get('/detail/:id/:uid', productController.getDetail);
+router.get('/:genre/:startIndex/:endIndex', productController.getList);
 router.post('/like', productController.bookLike);
 router.post('/rent', productController.bookRent);
 router.post('/return', productController.bookReturn);

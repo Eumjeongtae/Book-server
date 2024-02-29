@@ -3,7 +3,6 @@ import * as productRepository from '../repository/productRepository.js';
 
 // 메인 책 리스트
 export async function getList(req, res) {
-    console.log(req.params);
     try {
         let { genre } = req.params;
         let result = null;
@@ -20,7 +19,6 @@ export async function getList(req, res) {
 //책상새
 export async function getDetail(req, res) {
     let { id, uid } = req.params;
-
     try {
         // Promise.all을 사용하여 모든 쿼리를 병렬로 실행
         const [bookData, rentData, reservationData, reviewList] = await Promise.all([
