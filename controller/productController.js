@@ -101,11 +101,7 @@ export async function bookReservation(req, res) {
     }
 }
 
-// export async function bookReservation(req, res) {
-//     const { user_id, book_id, created_at } = req.body.data;
-//     const result = await productRepository.bookReservation(user_id, book_id, created_at);
-//     res.json(result);
-// }
+
 
 //책 예약 취소
 export async function bookReservationCancel(req, res) {
