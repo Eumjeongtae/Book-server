@@ -1,72 +1,172 @@
 import { db } from '../db/database.js';
 
 //책 리스트
-export async function getList(genre) {
-    let sql = ``;
+export async function getList(genre, startIndex, endIndex) {
+    let sql = '';
+
+    const limit = endIndex - startIndex + 1; // 필요한 행 수
+    const offset = startIndex - 1; // OFFSET을 계산합니다. SQL은 0부터 시작합니다.
+
+    let totalBooksParams = null;
+    let params = [];
+
+    // 전체 책의 수를 조회하는 쿼리
+    let totalBooksQuery = null;
+
     if (genre > 0) {
-        sql = `SELECT  book_name,author,image,id AS book_id,genre FROM Book where genre = ? `;
-        // sql = `SELECT  * FROM Genre`
+        totalBooksParams = [genre];
+        totalBooksQuery = 'SELECT COUNT(*) AS total FROM Book WHERE genre = ?';
+        params = [genre, limit, offset];
+        sql = `SELECT book_name, author, image, id AS book_id, genre FROM Book WHERE genre = ? ORDER BY id ASC LIMIT ? OFFSET ?`;
     } else {
-        sql = `SELECT  book_name,author,image,id AS book_id,genre FROM Book`;
-        // sql = `SELECT  * FROM User`
+        totalBooksQuery = 'SELECT COUNT(*) AS total FROM Book';
+        params = [limit, offset];
+        sql = `SELECT book_name, author, image, id AS book_id, genre FROM Book ORDER BY id ASC LIMIT ? OFFSET ?;`;
     }
 
-    return db.execute(sql, [genre]).then((result) => result[0]);
-}
-// 책정보 ,  책 좋아요 갯수 , 로그인중인 id의 좋아요 여부
-export async function getDetail(uid, id) {
-    let sql = `
-  SELECT 
-  b.*,
-  COUNT(ubl.user_id) AS like_count,
-  CASE
-      WHEN EXISTS (
-          SELECT 1
-          FROM UserBookLike ubl2
-          WHERE ubl2.book_id = b.id AND ubl2.user_id = ?
-      ) THEN TRUE
-      ELSE FALSE
-  END AS user_liked
-FROM Book b
-LEFT JOIN UserBookLike ubl ON b.id = ubl.book_id
-WHERE b.id = ?
-GROUP BY b.id;
-`;
+    // 전체 책의 수 또는 특정 장르의 책의 수 조회
+    const totalBooksResult = await db.execute(totalBooksQuery, totalBooksParams);
 
-    return db.execute(sql, [uid, id]).then((result) => result[0]);
+    // 페이지 데이터 조회
+    const pageDataResult = await db.execute(sql, params);
+    return {
+        total: totalBooksResult[0][0].total,
+        books: pageDataResult[0],
+    };
 }
+
+// export async function getList(genre ,startIndex , endIndex) {
+//     let sql = ``;
+//     if (genre > 0) {
+//         sql = `SELECT  book_name,author,image,id AS book_id,genre FROM Book where genre = ? `;
+//         // sql = `SELECT  * FROM Genre`
+//     } else {
+//         sql = `SELECT  book_name,author,image,id AS book_id,genre FROM Book`;
+//         // sql = `SELECT  * FROM User`
+//     }
+
+//     return db.execute(sql, [genre ,startIndex , endIndex]).then((result) => result[0]);
+// }
+
+// 책 상세정보
+export async function getDetail(uid, id) {
+    // 책에 대한 상세 내용
+    const bookDetails = await db.execute('SELECT * FROM Book B WHERE B.id = ?', [id]);
+
+    // 좋아요의 총개수, 로그인 유저가 좋아요했는지 여부
+    const likesDetails = await db.execute(
+        `
+    SELECT
+      (SELECT COUNT(*) FROM UserBookLike WHERE book_id = ?) AS total_likes,
+      (SELECT COUNT(*) FROM UserBookLike WHERE book_id = ? AND user_id = ?) AS user_likes
+  `,
+        [id, id, uid]
+    );
+
+    // 책 최신 대여 이력 확인
+    const rentalHistory = await db.execute(
+        `
+    SELECT * FROM RentalHistory RH
+    WHERE RH.book_id = ?
+    ORDER BY RH.id DESC
+    LIMIT 1
+  `,
+        [id]
+    );
+
+    // 책 최신 예약 상태 확인
+    const bookReservation = await db.execute(
+        `
+    SELECT BRV.reservation_status FROM BookReservation BRV
+    WHERE BRV.user_id = ? AND BRV.book_id = ?
+    ORDER BY BRV.id DESC
+    LIMIT 1
+  `,
+        [uid, id]
+    );
+
+    // 책 리뷰
+    const bookReviews = await db.execute(
+        `
+        SELECT 
+        BR.title, 
+        BR.content,
+        BR.score,
+        BR.user_id,
+        U.email
+      FROM 
+        BookReview BR
+      JOIN 
+        User U ON BR.user_id = U.id_idx
+      WHERE 
+        BR.book_id = ?;
+      
+  `,
+        [id]
+    );
+
+    return {
+        bookDetails: bookDetails[0][0],
+        likesDetails: likesDetails[0][0],
+        rentalHistory: rentalHistory[0][0],
+        bookReservation: bookReservation[0][0],
+        bookReviews: bookReviews[0],
+    };
+}
+
+// export async function getDetail(uid, id) {
+//     let sql = `
+//   SELECT
+//   b.*,
+//   COUNT(ubl.user_id) AS like_count,
+//   CASE
+//       WHEN EXISTS (
+//           SELECT 1
+//           FROM UserBookLike ubl2
+//           WHERE ubl2.book_id = b.id AND ubl2.user_id = ?
+//       ) THEN TRUE
+//       ELSE FALSE
+//   END AS user_liked
+// FROM Book b
+// LEFT JOIN UserBookLike ubl ON b.id = ubl.book_id
+// WHERE b.id = ?
+// GROUP BY b.id;
+// `;
+
+//     return db.execute(sql, [uid, id]).then((result) => result[0]);
+// }
 
 // 지금있는 페이지의 책을 유저가 예약 했는지
-export async function getRervation(uid, id) {
-    let sql = `SELECT *
-    FROM BookReservation
-    WHERE user_id = ? AND book_id = ? AND reservation_status = 0;
-    
-`;
-    return db.execute(sql, [uid, id]).then((result) => result[0]);
-}
+// export async function getRervation(uid, id) {
+//     let sql = `SELECT *
+//     FROM BookReservation
+//     WHERE user_id = ? AND book_id = ? AND reservation_status = 0;
+
+// `;
+//     return db.execute(sql, [uid, id]).then((result) => result[0]);
+// }
 
 // 지금있는 페이지의 책이 대여중이라면 대여중인 유저
-export async function getRentHistory(id) {
-    let sql = `SELECT user_id
-  FROM RentalHistory
-  WHERE book_id = ? and return_status = 0;
-`;
+// export async function getRentHistory(id) {
+//     let sql = `SELECT user_id
+//   FROM RentalHistory
+//   WHERE book_id = ? and return_status = 0;
+// `;
 
-    return db.execute(sql, [id]).then((result) => result[0]);
-}
+//     return db.execute(sql, [id]).then((result) => result[0]);
+// }
 
 // 지금있는 페이지의 책 리뷰들
-export async function getReview(id) {
-    let sql = `
-SELECT br.user_id, br.title, br.score, u.id
-FROM BookReview br
-JOIN User u ON br.user_id = u.id_idx
-WHERE br.book_id = ?;
-`;
+// export async function getReview(id) {
+//     let sql = `
+// SELECT br.user_id, br.title, br.score, u.id
+// FROM BookReview br
+// JOIN User u ON br.user_id = u.id_idx
+// WHERE br.book_id = ?;
+// `;
 
-    return db.execute(sql, [id]).then((result) => result[0]);
-}
+//     return db.execute(sql, [id]).then((result) => result[0]);
+// }
 
 //책 좋아요
 export async function bookLike(user_id, book_id) {
@@ -95,7 +195,6 @@ WHERE user_id = ? AND book_id = ? ;
 
 //책대여
 export async function bookRent(user_id, book_id, rent_date, expected_return_date) {
-
     // Step 1: 먼저, 예약 중인 로우가 있는지 확인
     let checkSql = `
     SELECT * FROM BookReservation
@@ -132,7 +231,6 @@ export async function bookRent(user_id, book_id, rent_date, expected_return_date
 
     return 'success';
 }
-
 
 //유저아이디와 책아이디를 받고  return_status가 대여중인 책반납
 export async function bookReturn(user_id, book_id) {

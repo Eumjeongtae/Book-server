@@ -1,16 +1,11 @@
 import * as productRepository from '../repository/productRepository.js';
 
-
 // 메인 책 리스트
 export async function getList(req, res) {
     try {
-        let { genre } = req.params;
-        let result = null;
-        if (genre === 0) {
-            result = await productRepository.getList();
-        } else {
-            result = await productRepository.getList(genre);
-        }
+        console.log(req.params);
+        let { genre, startIndex, endIndex } = req.params;
+        let result = await productRepository.getList(genre, startIndex, endIndex);
         res.json(result);
     } catch (error) {
         console.log(error);
@@ -20,29 +15,39 @@ export async function getList(req, res) {
 export async function getDetail(req, res) {
     let { id, uid } = req.params;
     try {
-        // Promise.all을 사용하여 모든 쿼리를 병렬로 실행
-        const [bookData, rentData, reservationData, reviewList] = await Promise.all([
-            productRepository.getDetail(uid, id),
-            productRepository.getRentHistory(id),
-            productRepository.getRervation(uid, id),
-            productRepository.getReview(id),
-        ]);
-
-        // reservationData의 존재 여부에 따라 reservationData 상태 설정
-        const isReservationAvailable = reservationData.length > 0;
-
-        // 최종 결과를 JSON 형태로 클라이언트에 전송
-        res.json({
-            bookData: bookData[0],
-            rentData: rentData[0],
-            reviewList: reviewList,
-            reservationData: isReservationAvailable,
-        });
+        const result = await productRepository.getDetail(uid, id);
+        res.json(result);
     } catch (error) {
         console.error('Error fetching book details:', error);
         res.status(500).send('An error occurred while fetching book details.');
     }
 }
+// export async function getDetail(req, res) {
+//     let { id, uid } = req.params;
+//     try {
+//         // Promise.all을 사용하여 모든 쿼리를 병렬로 실행
+//         const [bookData, rentData, reservationData, reviewList] = await Promise.all([
+//             productRepository.getDetail(uid, id),
+//             productRepository.getRentHistory(id),
+//             productRepository.getRervation(uid, id),
+//             productRepository.getReview(id),
+//         ]);
+
+//         // reservationData의 존재 여부에 따라 reservationData 상태 설정
+//         const isReservationAvailable = reservationData.length > 0;
+
+//         // 최종 결과를 JSON 형태로 클라이언트에 전송
+//         res.json({
+//             bookData: bookData[0],
+//             rentData: rentData[0],
+//             reviewList: reviewList,
+//             reservationData: isReservationAvailable,
+//         });
+//     } catch (error) {
+//         console.error('Error fetching book details:', error);
+//         res.status(500).send('An error occurred while fetching book details.');
+//     }
+// }
 
 //좋아요버튼
 export async function bookLike(req, res) {
@@ -61,7 +66,6 @@ export async function bookLike(req, res) {
     }
 }
 
-
 // 책대여
 export async function bookRent(req, res) {
     try {
@@ -73,7 +77,6 @@ export async function bookRent(req, res) {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }
-
 
 //책반납
 export async function bookReturn(req, res) {
@@ -87,8 +90,6 @@ export async function bookReturn(req, res) {
     }
 }
 
-
-
 //책 예약
 export async function bookReservation(req, res) {
     try {
@@ -100,8 +101,6 @@ export async function bookReservation(req, res) {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }
-
-
 
 //책 예약 취소
 export async function bookReservationCancel(req, res) {
