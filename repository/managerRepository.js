@@ -5,26 +5,26 @@ export async function authorityCheck(id_idx) {
     // 먼저 사용자의 권한을 확인합니다.
     const [userRows] = await db.execute(`SELECT authority FROM User WHERE id_idx = ?;`, [id_idx]);
 
-    // 만약 사용자가 관리자 권한을 가지고 있다면, Book 테이블에서 책 정보를 가져옵니다.
+    // 만약 사용자가 관리자 권한을 가지고 있다면, Book 테이블에서 책 정보를 가져옵니다/ 책이 중복되면 안됌
     if (userRows[0] && userRows[0].authority === 1) {
+        // 모든 책 정보 조회
+        const [allBooks] = await db.execute(`SELECT B.id, B.book_name, B.genre, B.income_date, B.status FROM Book B`);
         const [bookRows] = await db.execute(
-            `SELECT 
-            b.id AS book_id,
-            b.book_name,
-            b.income_date,
-            b.status,
-            rh.expected_return_date
-        FROM 
-            Book b
-        LEFT JOIN 
-            (SELECT book_id, expected_return_date FROM RentalHistory WHERE return_status = 0) AS rh ON b.id = rh.book_id
-        ORDER BY 
-            b.income_date DESC;
+            `SELECT U.name, U.email, B.id AS book_id, B.book_name, B.income_date, RH.expected_return_date, B.status
+            FROM RentalHistory RH
+            INNER JOIN (
+                SELECT book_id, MAX(id) AS max_id
+                FROM RentalHistory
+                GROUP BY book_id
+            ) AS LT ON RH.book_id = LT.book_id AND RH.id = LT.max_id
+            LEFT JOIN Book B ON B.id = RH.book_id
+            LEFT JOIN User U ON U.id_idx = RH.user_id
+            ORDER BY book_id DESC;
         
         
         `
         );
-        return bookRows;
+        return {allBooks,bookRows};
     } else {
         // 관리자 권한이 없는 경우, 적절한 메시지나 비어있는 배열을 반환할 수 있습니다.
         return false; // 혹은 []
@@ -76,7 +76,8 @@ export async function bookEdit(id_idx, book_id) {
         const [bookRows] = await db.execute(`SELECT * FROM Book WHERE id = ?;`, [book_id]);
 
         // 대여 기록 중 대여일시와 반납 예정일만 조회
-        const [rentalHistory] = await db.execute(`
+        const [rentalHistory] = await db.execute(
+            `
             SELECT 
                 RentalHistory.rent_date,
                 RentalHistory.return_date,
@@ -87,15 +88,16 @@ export async function bookEdit(id_idx, book_id) {
                 User ON RentalHistory.user_id = User.id_idx
             WHERE 
                 RentalHistory.book_id = ?;
-        `, [book_id]);
+        `,
+            [book_id]
+        );
 
         // 책 정보와 필터링된 대여 기록 함께 반환
         return {
             book: bookRows[0] ? bookRows : false, // 책 정보가 있으면 반환, 없으면 false 반환
-            rentalHistory: rentalHistory.length > 0 ? rentalHistory : false // 필터링된 대여 기록이 있으면 반환, 없으면 false 반환
+            rentalHistory: rentalHistory.length > 0 ? rentalHistory : false, // 필터링된 대여 기록이 있으면 반환, 없으면 false 반환
         };
     } else {
         return false; // 관리자 권한이 없으면 false 반환
     }
 }
-

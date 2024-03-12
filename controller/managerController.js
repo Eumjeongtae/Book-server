@@ -4,6 +4,7 @@ export async function getManagerList(req, res) {
     try {
         const { id_idx } = req.params;
         const result = await managerRepository.authorityCheck(id_idx);
+        console.log(result);
         res.json(result);
     } catch (error) {
         console.log(error);

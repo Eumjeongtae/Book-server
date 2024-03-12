@@ -4,13 +4,14 @@ import * as productRepository from '../repository/productRepository.js';
 export async function getList(req, res) {
     try {
         console.log(req.params);
-        let { genre, startIndex, endIndex } = req.params;
-        let result = await productRepository.getList(genre, startIndex, endIndex);
+        let { genre, startIndex ,pageSize} = req.params;
+        let result = await productRepository.getList(genre, startIndex ,pageSize);
         res.json(result);
     } catch (error) {
         console.log(error);
     }
 }
+
 //책상새
 export async function getDetail(req, res) {
     let { id, uid } = req.params;

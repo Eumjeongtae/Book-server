@@ -28,6 +28,7 @@ function generateRandomNumbers(min, max, count) {
 
     return numbers.join('');
 }
+
 //아이티 중복확인
 export async function idCheck(req, res) {
     const id = req.body.data;
@@ -41,7 +42,7 @@ export async function emailCheck(req, res) {
     let { data } = req.body;
     console.log(req.body);
     let email = data;
-    const result = await userRepository.getUserEmail(email);
+    // const result = await userRepository.getUserEmail(email);
 
     const randomNumbers = generateRandomNumbers(1, 9, 6);
     const mailOptions = {
@@ -62,6 +63,7 @@ export async function emailCheck(req, res) {
         transporter.close(); // 전송 종료
     }
 }
+
 //회원가입
 export async function signUp(req, res) {
     let { id, name, password, email, mailAddr } = req.body.data;

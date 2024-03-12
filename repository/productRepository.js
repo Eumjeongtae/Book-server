@@ -1,27 +1,23 @@
 import { db } from '../db/database.js';
 
 //책 리스트
-export async function getList(genre, startIndex, endIndex) {
-    let sql = '';
-
-    const limit = endIndex - startIndex + 1; // 필요한 행 수
-    const offset = startIndex - 1; // OFFSET을 계산합니다. SQL은 0부터 시작합니다.
-
+export async function getList(genre, startIndex ,pageSize) {
     let totalBooksParams = null;
     let params = [];
 
     // 전체 책의 수를 조회하는 쿼리
-    let totalBooksQuery = null;
+    let totalBooksQuery = '';
+    let sql = '';
 
     if (genre > 0) {
         totalBooksParams = [genre];
         totalBooksQuery = 'SELECT COUNT(*) AS total FROM Book WHERE genre = ?';
-        params = [genre, limit, offset];
-        sql = `SELECT book_name, author, image, id AS book_id, genre FROM Book WHERE genre = ? ORDER BY id ASC LIMIT ? OFFSET ?`;
+        params = [genre, pageSize,startIndex];
+        sql = `SELECT book_name, author, image, id , genre FROM Book WHERE genre = ? ORDER BY id ASC LIMIT ? OFFSET ?`;
     } else {
         totalBooksQuery = 'SELECT COUNT(*) AS total FROM Book';
-        params = [limit, offset];
-        sql = `SELECT book_name, author, image, id AS book_id, genre FROM Book ORDER BY id ASC LIMIT ? OFFSET ?;`;
+        params = [pageSize,startIndex];
+        sql = `SELECT book_name, author, image, id , genre FROM Book ORDER BY id ASC LIMIT ? OFFSET ?;`;
     }
 
     // 전체 책의 수 또는 특정 장르의 책의 수 조회
@@ -253,19 +249,18 @@ export async function bookReturn(user_id, book_id) {
     return 'success';
 }
 
+//책 예약
 export async function bookReservation(user_id, book_id, created_at) {
     let sql = `
 INSERT INTO BookReservation (user_id, book_id,created_at,cancel_at)
 VALUES
 (?, ?, ?,null);
 `;
-    //   let sql = `
-    // select * from BookReservation;
-    //   `
 
     return db.execute(sql, [user_id, book_id, created_at]).then((result) => 'success');
-    // return db.execute(sql, []).then((result) => result[0]);
 }
+
+//책 예약 취소
 export async function bookReservationCancel(cancel_at, user_id, book_id) {
     let sql = `
     UPDATE BookReservation
@@ -277,49 +272,36 @@ export async function bookReservationCancel(cancel_at, user_id, book_id) {
       book_id = ? AND
       reservation_status = 0;
 `;
-    //   let sql = `
-    // select * from BookReservation;
-    //   `
 
     return db.execute(sql, [cancel_at, user_id, book_id]).then((result) => 'success');
-    // return db.execute(sql, []).then((result) => result[0]);
 }
 
 // 마이페이지 책반납 이력
 export async function myPageReturnHistory(user_id) {
     let sql = `
-    SELECT 
-      rh.book_id, 
-      rh.rent_date, 
-      rh.return_date, 
-      b.image AS image, 
-      b.author AS author,
-      b.book_name AS book_name
-    FROM 
-      RentalHistory rh
-    JOIN 
-      Book b ON rh.book_id = b.id
-    WHERE 
-      rh.user_id = ? AND rh.return_status = 1;
+    SELECT RH.*, B.*
+    FROM RentalHistory RH
+    INNER JOIN (
+        SELECT book_id, MAX(id) AS max_id
+        FROM RentalHistory
+        WHERE user_id = ?
+        GROUP BY book_id
+    ) AS LT ON RH.book_id = LT.book_id AND RH.id = LT.max_id
+    LEFT JOIN Book B ON B.id = RH.book_id
+    WHERE RH.user_id = ?
+    ORDER BY RH.id DESC;
   `;
 
-    return db.execute(sql, [user_id]).then((result) => result[0]);
+    return db.execute(sql, [user_id, user_id]).then((result) => result[0]);
 }
 // 마이페이지 책대여 이력
 export async function myPageRentHistory(user_id) {
     let sql = `
-    SELECT 
-      rh.book_id, 
-      rh.expected_return_date, 
-      b.image AS image, 
-      b.author AS author,
-      b.book_name AS book_name
-    FROM 
-      RentalHistory rh
-    JOIN 
-      Book b ON rh.book_id = b.id
-    WHERE 
-      rh.user_id = ? AND rh.return_status = 0;
+    SELECT RH.expected_return_date, B.book_name, B.author, B.image,B.id 
+    FROM RentalHistory RH
+    LEFT JOIN Book B ON RH.book_id = B.id
+    WHERE RH.user_id=? AND RH.return_status=0
+    ORDER BY RH.id DESC;
   `;
 
     return db.execute(sql, [user_id]).then((result) => result[0]);
@@ -329,27 +311,11 @@ export async function myPageRentHistory(user_id) {
 export async function myPageReserve(user_id) {
     let sql = `
 
-    SELECT 
-    b.id AS book_id,
-    b.book_name,
-    b.status AS book_status,
-    MAX(rh.expected_return_date) AS expected_return_date
-FROM 
-    BookReservation br
-JOIN 
-    Book b ON br.book_id = b.id
-LEFT JOIN 
-    RentalHistory rh ON b.id = rh.book_id AND rh.return_status = 0
-WHERE 
-    br.user_id = ? AND br.reservation_status = 0
-GROUP BY 
-    b.id, b.book_name, b.status;
-
-
-
-
-
-
+    SELECT B.id , B.book_name, B.author, B.image ,B.status,RH.expected_return_date
+    FROM BookReservation BRV
+    LEFT JOIN Book B ON BRV.book_id=B.id
+    LEFT JOIN RentalHistory RH ON BRV.book_id=RH.book_id AND RH.return_status=0
+    WHERE BRV.user_id = ? AND BRV.reservation_status=0
 
   `;
 
