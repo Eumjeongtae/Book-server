@@ -3,7 +3,6 @@ import * as productRepository from '../repository/productRepository.js';
 // 메인 책 리스트
 export async function getList(req, res) {
     try {
-        console.log(req.params);
         let { genre, startIndex ,pageSize} = req.params;
         let result = await productRepository.getList(genre, startIndex ,pageSize);
         res.json(result);

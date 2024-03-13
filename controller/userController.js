@@ -40,27 +40,47 @@ export async function idCheck(req, res) {
 //이메일 체크
 export async function emailCheck(req, res) {
     let { data } = req.body;
-    console.log(req.body);
+    let { sendMailValue } = req.params;
+    console.log(req.params);
     let email = data;
-    // const result = await userRepository.getUserEmail(email);
-
     const randomNumbers = generateRandomNumbers(1, 9, 6);
-    const mailOptions = {
-        from: process.env.NAVER_ID,
-        to: email,
-        subject: '인증 관련 메일 입니다.',
-        html: `<h1>인증번호를 입력해주세요 ${randomNumbers}</h1>`,
-    };
+    // const result = await userRepository.getUserEmail(email);
+    if (sendMailValue === 'user') {
+        const mailOptions = {
+            from: process.env.NAVER_ID,
+            to: email,
+            subject: '인증 관련 메일 입니다.',
+            html: `<h1>인증번호를 입력해주세요 ${randomNumbers}</h1>`,
+        };
 
-    try {
-        const response = await transporter.sendMail(mailOptions);
-        // console.log("Mail Sent Response:", response);
-        res.json({ ok: true, msg: '메일 전송에 성공하였습니다.', authNum: randomNumbers });
-    } catch (err) {
-        // console.error("Send Mail Error:", err);
-        res.json({ ok: false, msg: '메일 전송에 실패하였습니다.' });
-    } finally {
-        transporter.close(); // 전송 종료
+        try {
+            const response = await transporter.sendMail(mailOptions);
+            // console.log("Mail Sent Response:", response);
+            res.json({ ok: true, msg: '메일 전송에 성공하였습니다.', authNum: randomNumbers });
+        } catch (err) {
+            // console.error("Send Mail Error:", err);
+            res.json({ ok: false, msg: '메일 전송에 실패하였습니다.' });
+        } finally {
+            transporter.close(); // 전송 종료
+        }
+    } else {
+        const mailOptions = {
+            from: process.env.NAVER_ID,
+            to: email,
+            subject: sendMailValue + '책이 연체되었습니다.',
+            html: `<h1>신속히 반납해주세요!</h1>`,
+        };
+
+        try {
+            const response = await transporter.sendMail(mailOptions);
+            // console.log("Mail Sent Response:", response);
+            res.json({ ok: true, msg: '메일 전송에 성공하였습니다.', authNum: randomNumbers });
+        } catch (err) {
+            // console.error("Send Mail Error:", err);
+            res.json({ ok: false, msg: '메일 전송에 실패하였습니다.' });
+        } finally {
+            transporter.close(); // 전송 종료
+        }
     }
 }
 
