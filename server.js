@@ -5,6 +5,7 @@ import authRouter from "./router/authRouter.js";
 import signupRouter from "./router/signupRouter.js";
 import loginRouter from "./router/loginRouter.js";
 import productRouter from "./router/productRouter.js";
+import mainRouter from "./router/mainRouter.js";
 import reviewRouter from "./router/reviewRouter.js";
 import newBookRouter from "./router/newBookRouter.js";
 import managerRouter from "./router/managerRouter.js";
@@ -22,6 +23,7 @@ server.use("/imgupload", imgUploadRouter)
 server.use("/auth", authRouter);
 server.use("/login", loginRouter);
 server.use("/signup", signupRouter);
+server.use("/main", mainRouter);
 server.use("/product", productRouter);
 server.use("/review", reviewRouter);
 server.use("/manager", managerRouter);

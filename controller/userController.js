@@ -89,7 +89,7 @@ export async function signUp(req, res) {
     let { id, name, password, email, mailAddr } = req.body.data;
     email = email + mailAddr;
     password = bcrypt.hashSync(password, 10);
-    let login_type = 3;
+    let login_type = 4;
     const result = await userRepository.insertUser(id, password, email, name, login_type);
     if (result === 'good') {
         res.json('가입완료');
