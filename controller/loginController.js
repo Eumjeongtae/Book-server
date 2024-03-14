@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 //일반 로그인
 export async function login(req, res) {
     const { id, password } = req.body.data;
+    console.log(req.body.data);
     const result = await loginRepository.login(id);
     result.login = false;
     let token = null;

@@ -38,6 +38,7 @@ export async function newBook(req, res) {
             status,
             memo
         );
+        console.log(result);
         res.json(result);
     } catch (error) {
         console.log(error);
